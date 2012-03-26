@@ -33,14 +33,8 @@ public:
                        // approximation = don't do points for all points of the contour, if the contour runs
                        // along a straight line, for example...
 	
-	void draw( float x, float y, float w, float h );
-	
-    int	nBlobs, nFingers;     // how many did we find
-	
     vector <ofxBlob>	blobs;      // the blobs, in a std::vector...
-	vector <ofxBlob>	fingers;
-
-	bool bTrackBlobs, bTrackFingers;
+    int                 nBlobs;
 	
 protected:
     // this is stuff, not for general public to touch -- we need
@@ -50,13 +44,14 @@ protected:
     CvMemStorage*       storage;
     CvMoments*          myMoments;
 
+    
+    
     // internally, we find cvSeqs, they will become blobs.
     int                 nCvSeqsFound;
     CvSeq*              cvSeqBlobs[TOUCH_MAX_CONTOURS];
 
     // imporant!!
     void                reset();
-	int  _width;
-    int  _height;
+	int                 width, height;
 };
 #endif

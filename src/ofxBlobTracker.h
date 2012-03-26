@@ -11,32 +11,36 @@
 #ifndef OFXBLOBTRACKER
 #define OFXBLOBTRACKER
 
-#include <list>
-#include <map>
-
+#include "ofxBlob.h"
 #include "ofxContourFinder.h"
 
-class ofxBlobTracker {
+class ofxBlobTracker{
 public:
 	ofxBlobTracker();
-	~ofxBlobTracker();
-	
-	//assigns IDs to each blob in the contourFinder
-	void track(ofxContourFinder* newBlobs);
-
-	int MOVEMENT_FILTERING;
-	std::vector<ofxBlob> getTrackedBlobs();
-	std::vector<ofxBlob> getTrackedFingers();
-
+    
+    void    update( ofxCvGrayscaleImage& input, int _threshold = -1, 
+                   int minArea = 20 ,int maxArea = (340*240)/3, int nConsidered = 10,
+                   double hullPress = 20, bool bFindHoles = false, bool bUseApproximation = true);
+    void    draw( float _x = 0, float _y = 0, float _width = 0, float _height = 0);
+    
+    ofxBlob operator[](int _n){ if ( (_n >= 0) && (_n < trackedBlobs.size()) ) return trackedBlobs[_n]; };
+    int     size(){return trackedBlobs.size(); };
+    
+    bool    bUpdateBackground;
+	int     movementFiltering;
+    
 private:
-	int trackKnn(ofxContourFinder *newBlobs, ofxBlob *track, int k, double thresh, bool fingers);
-	int	IDCounter;	  //counter of last blob
-	//int	fightMongrel;
-	int numEnter,numLeave;
-	int size;
-	
-	std::vector<ofxBlob>		trackedBlobs; //tracked blobs
-	std::vector<ofxBlob>		trackedFingers; //tracked Fingers
+    //assigns IDs to each blob in the contourFinder
+	void    track(ofxContourFinder* newBlobs);
+	int     trackKnn(ofxContourFinder *newBlobs, ofxBlob *track, int k, double thresh);
+    
+    ofxCvGrayscaleImage backgroundImage;
+    ofxContourFinder    contourFinder;
+    
+	vector<ofxBlob> trackedBlobs;		//tracked blobs
+    
+	int             IDCounter, numEnter, numLeave, nSize;
+    int             width, height;
 };
 
 #endif
