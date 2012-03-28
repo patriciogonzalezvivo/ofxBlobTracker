@@ -1,7 +1,6 @@
 /*
 * ofBlob.h
 *
-*
 * A blob is a homogenous patch represented by a polygonal contour.
 * Typically a blob tracker uses the contour to figure out the blob's
 * persistence and "upgrades" it with ids and other temporal
@@ -32,7 +31,6 @@ public:
     		
     //----------------------------------------
     ofxBlob() {
-        // ofxCvBlob
         area 		= 0.0f;
         length 		= 0.0f;
         hole 		= false;
@@ -45,7 +43,7 @@ public:
 
     //----------------------------------------
     void drawContours(float x = 0, float y = 0, float inputWidth = ofGetWidth(), float inputHeight = ofGetHeight(), float outputWidth =ofGetWidth(), float outputHeight = ofGetHeight()) {
-        //draw contours
+    
         ofPushStyle();
         ofNoFill();
         ofBeginShape();

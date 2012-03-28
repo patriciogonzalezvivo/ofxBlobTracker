@@ -141,18 +141,13 @@ int ofxContourFinder::findContours(	ofxCvGrayscaleImage&  input,
             //
             if (area > 5000){
                 CvPoint*    PointArray;
-                int*    hull;
-                int		hullsize;
+                int*        hull;
+                int         hullsize;
                 
                 CvSeq*  contourAprox = cvApproxPoly(contour_ptr, sizeof(CvContour), storage, CV_POLY_APPROX_DP, hullPress, 1 );
                 int count = contourAprox->total; // This is number point in contour
                     
-                //CvRect rect = cvContourBoundingRect(contour, 1);
-                /*
-                CvPoint center;
-                center.x = rect.x+rect.width/2;
-                center.y = rect.y+rect.height/2;*/
-                
+        
                 PointArray = (CvPoint*)malloc( count*sizeof(CvPoint) ); // Alloc memory for contour point set.
                 hull = (int*)malloc(sizeof(int)*count);	// Alloc memory for indices of convex hull vertices.
                 
@@ -182,16 +177,29 @@ int ofxContourFinder::findContours(	ofxCvGrayscaleImage&  input,
                     
                     float angle = acos( (v1.x*v2.x + v1.y*v2.y) / (norm(v1) * norm(v2)) );
                     
-                    // low interior angle + within upper 90% of region -> we got a finger
-                    if (angle < 1 ){//&& PointArray[idx].y < cutoff) {
+                    // We got a finger
+                    //
+                    if (angle < 1 ){
                         blob.nFingers++;
                         blob.fingers.push_back( ofPoint((float)PointArray[idx].x, (float)PointArray[idx].y) );
                     }
+                    
+                    // TODO:
+                    //      - Filtrar el 6to dedo que se hace en el borde del brazo, calculando la distancia con el resto
+                    //      osea... si hay 6 dedos... buscar cual esta más lejos del anterior o posterior.
+                    //
                 }
+                
+                if ( blob.nFingers > 2 ){
+                    for (int j = 0; j < blob.fingers.size(); j++ ){
+                    
+                    }
+                }
+                
                 // Free memory.
                 free(PointArray);
                 free(hull);
-                free(contourAprox);
+                //free(contourAprox);
             }
             
             blobs.push_back(blob);

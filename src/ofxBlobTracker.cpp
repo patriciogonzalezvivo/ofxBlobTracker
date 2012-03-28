@@ -47,7 +47,7 @@ void ofxBlobTracker::update( ofxCvGrayscaleImage& input, int _threshold, int _mi
     input.updateTexture();
     
     contourFinder.findContours(input, _minArea, _maxArea, _nConsidered, _hullPress, _bFindHoles, _bUseApproximation);
-    track(&contourFinder);
+    track(&contourFinder);    
 }
 
 //assigns IDs to each blob in the contourFinder
@@ -349,11 +349,11 @@ void ofxBlobTracker::draw( float _x, float _y, float _width, float _height ) {
     // ---------------------------- draw the bounding rectangle
     ofNoFill();
     for( int i=0; i<(int)trackedBlobs.size(); i++ ) {
-        ofSetHexColor(0xDD00CC);
+        ofSetColor(221, 0, 204, 200);
         trackedBlobs[i].drawBox();
-        ofSetHexColor(0x00FFFF);
+        ofSetColor(0,255,255);
         trackedBlobs[i].drawContours();
-        ofSetColor(0,153,255);
+        ofSetColor(0,153,255,100);
         trackedBlobs[i].drawCenter();
         ofSetColor(255,255);
         ofDrawBitmapString(ofToString(trackedBlobs[i].id), trackedBlobs[i].centroid );
