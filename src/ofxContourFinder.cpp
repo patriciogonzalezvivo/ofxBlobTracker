@@ -96,16 +96,16 @@ int ofxContourFinder::findContours(	ofxCvGrayscaleImage&  input,
             
             // this is if using non-angle bounding box
             CvRect rect	= cvBoundingRect( contour_ptr, 0 );
-            blob.boundingRect.x      = rect.x;
-            blob.boundingRect.y      = rect.y;
-            blob.boundingRect.width  = rect.width;
-            blob.boundingRect.height = rect.height;
+            blob.boundingRect.x      = rect.x/width;
+            blob.boundingRect.y      = rect.y/height;
+            blob.boundingRect.width  = rect.width/width;
+            blob.boundingRect.height = rect.height/height;
             
             //Angle Bounding rectangle
-            blob.angleBoundingRect.x	  = box.center.x;
-            blob.angleBoundingRect.y	  = box.center.y;
-            blob.angleBoundingRect.width  = box.size.height;
-            blob.angleBoundingRect.height = box.size.width;
+            blob.angleBoundingRect.x	  = box.center.x/width;
+            blob.angleBoundingRect.y	  = box.center.y/height;
+            blob.angleBoundingRect.width  = box.size.height/width;
+            blob.angleBoundingRect.height = box.size.width/height;
             blob.angle = box.angle;
             
             // assign other parameters
@@ -116,12 +116,13 @@ int ofxContourFinder::findContours(	ofxCvGrayscaleImage&  input,
             // The cast to int causes errors in tracking since centroids are calculated in
             // floats and they migh land between integer pixel values (which is what we really want)
             // This not only makes tracking more accurate but also more fluid
-            blob.centroid.x			 = (myMoments->m10 / myMoments->m00);
-            blob.centroid.y 		 = (myMoments->m01 / myMoments->m00);
+            blob.centroid.x			 = (myMoments->m10 / myMoments->m00) / width;
+            blob.centroid.y 		 = (myMoments->m01 / myMoments->m00) / height;
             blob.lastCentroid.x 	 = 0;
             blob.lastCentroid.y 	 = 0;
             
             if (blob.nFingers != 0){
+                
                 blob.nFingers = 0;
                 blob.fingers.clear();
             }
@@ -133,7 +134,7 @@ int ofxContourFinder::findContours(	ofxCvGrayscaleImage&  input,
             
             for( int j=0; j < min(TOUCH_MAX_CONTOUR_LENGTH, contour_ptr->total); j++ ) {
                 CV_READ_SEQ_ELEM( pt, reader );
-                blob.pts.push_back( ofPoint((float)pt.x, (float)pt.y) );
+                blob.pts.push_back( ofPoint((float)pt.x / width, (float)pt.y / height) );
             }
             blob.nPts = blob.pts.size();
             
@@ -156,7 +157,7 @@ int ofxContourFinder::findContours(	ofxCvGrayscaleImage&  input,
                 // Find convex hull for curent contour.
                 cvConvexHull( PointArray, count, NULL, CV_COUNTER_CLOCKWISE, hull, &hullsize);
                 
-                int upper = 640, lower = 0;
+                int upper = 1, lower = 0;
                 for	(int j=0; j<hullsize; j++) {
                     int idx = hull[j]; // corner index
                     if (PointArray[idx].y < upper) 
@@ -180,26 +181,36 @@ int ofxContourFinder::findContours(	ofxCvGrayscaleImage&  input,
                     // We got a finger
                     //
                     if (angle < 1 ){
+                        ofPoint posibleFinger = ofPoint((float)PointArray[idx].x / width, 
+                                                        (float)PointArray[idx].y / height);
+                        
                         blob.nFingers++;
-                        blob.fingers.push_back( ofPoint((float)PointArray[idx].x, (float)PointArray[idx].y) );
+                        blob.fingers.push_back( posibleFinger );
                     }
-                    
-                    // TODO:
-                    //      - Filtrar el 6to dedo que se hace en el borde del brazo, calculando la distancia con el resto
-                    //      osea... si hay 6 dedos... buscar cual esta más lejos del anterior o posterior.
-                    //
                 }
                 
-                if ( blob.nFingers > 2 ){
-                    for (int j = 0; j < blob.fingers.size(); j++ ){
+                
+                if ( blob.nFingers > 0 ){
+                    // because means that probably it's a hand                    
+                    ofVec2f fingersAverage;
+                    for (int j = 0; j < blob.fingers.size(); j++){
+                        fingersAverage += blob.fingers[j];
+                    }
                     
+                    fingersAverage /= blob.fingers.size();
+                    
+                    if (blob.gotFingers){
+                        blob.palm = (blob.palm + fingersAverage)*0.5;
+                        //blob.palm = fingersAverage;
+                    } else {
+                        blob.palm = fingersAverage;
+                        blob.gotFingers = true;   // If got more than three fingers in a road it'll remember
                     }
                 }
                 
                 // Free memory.
                 free(PointArray);
                 free(hull);
-                //free(contourAprox);
             }
             
             blobs.push_back(blob);

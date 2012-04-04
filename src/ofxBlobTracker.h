@@ -26,9 +26,13 @@ public:
     int     size(){return trackedBlobs.size(); };
     ofxBlob operator[](int _n){ if ( (_n >= 0) && (_n < trackedBlobs.size()) ) return trackedBlobs[_n]; };
     
-    bool    bUpdateBackground;
-	int     movementFiltering;
+    ofEvent<ofxBlob>    blobAdded;
+    ofEvent<ofxBlob>    blobMoved;
+    ofEvent<ofxBlob>    blobDeleted;
     
+    int     movementFiltering;
+    bool    bUpdateBackground;
+
 private:
 	void    track(ofxContourFinder* newBlobs);
 	int     trackKnn(ofxContourFinder *newBlobs, ofxBlob *track, int k, double thresh);

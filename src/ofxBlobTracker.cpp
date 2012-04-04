@@ -9,7 +9,7 @@
 #include "ofxBlobTracker.h"
 
 ofxBlobTracker::ofxBlobTracker(){
-	IDCounter = 0; //200;
+	IDCounter = 0;
 	numEnter = 0;
 	numLeave = 0;
 	nSize = 0; 
@@ -23,8 +23,6 @@ ofxBlobTracker::ofxBlobTracker(){
 }
 
 void ofxBlobTracker::update( ofxCvGrayscaleImage& input, int _threshold, int _minArea,int _maxArea , int _nConsidered , double _hullPress , bool _bFindHoles , bool _bUseApproximation ){
-    
-        
     
     if (( width != input.getWidth()) || 
         ( height != input.getHeight()) ){
@@ -158,6 +156,7 @@ void ofxBlobTracker::track(ofxContourFinder* newBlobs){
 		if(trackedBlobs[i].id == -1) { //dead
 			numLeave++;
 			//erase track
+            ofNotifyEvent(blobDeleted, trackedBlobs[i]);
 			trackedBlobs.erase(trackedBlobs.begin()+i, trackedBlobs.begin()+i+1);
 			i--; //decrement one since we removed an element
 		} else {//living, so update it's data
@@ -165,6 +164,10 @@ void ofxBlobTracker::track(ofxContourFinder* newBlobs){
 				if(trackedBlobs[i].id == newBlobs->blobs[j].id) {
 					//update track
 					ofPoint tempLastCentroid = trackedBlobs[i].centroid; // assign the new centroid to the old
+                    
+                    if (trackedBlobs[i].gotFingers)
+                        newBlobs->blobs[j].gotFingers = true;
+                    
 					trackedBlobs[i] = newBlobs->blobs[j];
 					trackedBlobs[i].lastCentroid = tempLastCentroid;
                     
@@ -172,8 +175,18 @@ void ofxBlobTracker::track(ofxContourFinder* newBlobs){
 					//get the Differences in position
 					tD.set(trackedBlobs[i].centroid.x - trackedBlobs[i].lastCentroid.x, 
                            trackedBlobs[i].centroid.y - trackedBlobs[i].lastCentroid.y);
+                    
 					//calculate the acceleration
 					float posDelta = sqrtf((tD.x*tD.x)+(tD.y*tD.y));
+                    if (posDelta > 0.001){
+                        if (trackedBlobs[i].gotFingers){
+                            if (trackedBlobs[i].nFingers <= 1){
+                                trackedBlobs[i].palm += trackedBlobs[i].D;
+                            }
+                        }
+                        
+                        ofNotifyEvent(blobMoved, trackedBlobs[i]);
+                    }
                     
 					// AlexP
 					// now, filter the blob position based on MOVEMENT_FILTERING value
@@ -211,7 +224,7 @@ void ofxBlobTracker::track(ofxContourFinder* newBlobs){
 					//set sitting (held length)
                     if(trackedBlobs[i].maccel < 7) {	//1 more frame of sitting
 						if(trackedBlobs[i].sitting != -1)
-							trackedBlobs[i].sitting = ofGetElapsedTimef() - trackedBlobs[i].downTime;           
+							trackedBlobs[i].sitting = ofGetElapsedTimef() - trackedBlobs[i].downTime; 
 					} else
 						trackedBlobs[i].sitting = -1;
                     
@@ -242,7 +255,9 @@ void ofxBlobTracker::track(ofxContourFinder* newBlobs){
 			//newBlobs->blobs[i].lastTimeTimeWasChecked = ofGetElapsedTimeMillis();
             
 			trackedBlobs.push_back(newBlobs->blobs[i]);
+            ofNotifyEvent(blobAdded, trackedBlobs.back());
 			numEnter++;
+            
 			if (numEnter > 20){
                 ofLog(OF_LOG_ERROR, "ofxTracking: Track: something wrong!\n");
 			}
@@ -338,8 +353,8 @@ void ofxBlobTracker::draw( float _x, float _y, float _width, float _height ) {
     float scalex = 0.0f;
     float scaley = 0.0f;
 	
-    if( width != 0 ) { scalex = _width/width; } else { scalex = 1.0f; }
-    if( height != 0 ) { scaley = _height/height; } else { scaley = 1.0f; }
+    if( width != 0 ) { scalex = _width/width; } else { scalex = width;};//1.0f; }
+    if( height != 0 ) { scaley = _height/height; } else { scaley = height;};//1.0f; }
 	
     ofPushStyle();
     ofPushMatrix();

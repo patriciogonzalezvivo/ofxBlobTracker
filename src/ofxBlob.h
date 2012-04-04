@@ -17,8 +17,13 @@
 
 class ofxBlob : public ofxCvBlob {
 public: 
-    int                 nFingers;
-    vector<ofPoint>     fingers;
+    
+    //  Finger/Hand detection
+    //
+    int                 nFingers;       //  Active fingers
+    vector<ofPoint>     fingers;        //  Position of active fingers
+    bool                gotFingers;     //  If in some point got fingers we can supose that it's a hand
+    ofPoint             palm;
 
     ofRectangle         angleBoundingRect;
     ofPoint             lastCentroid, D;
@@ -36,49 +41,54 @@ public:
         hole 		= false;
         nPts        = 0;
         
+        gotFingers = false;
+        
         age			= 0.0f;
         sitting		= 0.0f;
         lastTimeTimeWasChecked = ofGetElapsedTimeMillis(); //get current time as of creation
     }
 
     //----------------------------------------
-    void drawContours(float x = 0, float y = 0, float inputWidth = ofGetWidth(), float inputHeight = ofGetHeight(), float outputWidth =ofGetWidth(), float outputHeight = ofGetHeight()) {
-    
+    void drawContours(float x = 0, float y = 0, float outputWidth = ofGetWidth(), float outputHeight = ofGetHeight()) {
+        ofPushMatrix();
         ofPushStyle();
+        
         ofNoFill();
         ofBeginShape();
         for (int i = 0; i < pts.size(); i++)
-            ofVertex(x + pts[i].x/inputWidth * outputWidth, y + pts[i].y/(inputHeight) * outputHeight);
+            ofVertex(x + pts[i].x * outputWidth, y + pts[i].y * outputHeight);
         ofEndShape(true);
-        ofPopStyle();
-    }
-	
-    void drawCenter(float x = 0, float y = 0, float inputWidth = ofGetWidth(), float inputHeight = ofGetHeight(), float outputWidth = ofGetWidth(), float outputHeight = ofGetHeight()) {
-        ofPushMatrix();
-        
-        ofTranslate(x + angleBoundingRect.x/inputWidth * outputWidth, y + angleBoundingRect.y/inputHeight * outputHeight);
-        ofRotate(angle+90, 0.0f, 0.0f, 1.0f);
-        ofTranslate(-(x + angleBoundingRect.x/inputWidth * outputWidth), -(y + angleBoundingRect.y/inputHeight * outputHeight)); 
-    
-        ofPushStyle();
-        ofNoFill();
-        ofRect(x + (angleBoundingRect.x/inputWidth) * outputWidth, y + ((angleBoundingRect.y - angleBoundingRect.height/2)/inputHeight) * outputHeight, 1, (angleBoundingRect.height)/inputHeight * outputHeight); //Vertical Plus
-        ofRect(x + ((angleBoundingRect.x - angleBoundingRect.width/2)/inputWidth) * outputWidth, y + (angleBoundingRect.y/inputHeight) * outputHeight, (angleBoundingRect.width)/inputWidth * outputWidth, 1); //Horizontal Plus
         
         ofPopStyle();
         ofPopMatrix();
     }
 	
-    void drawBox(float x = 0, float y = 0, float inputWidth = ofGetWidth(), float inputHeight = ofGetHeight(), float outputWidth = ofGetWidth(), float outputHeight = ofGetHeight()){		
+    void drawCenter(float x = 0, float y = 0, float outputWidth = ofGetWidth(), float outputHeight = ofGetHeight()) {
         ofPushMatrix();
-        ofTranslate(x + angleBoundingRect.x/inputWidth * outputWidth, y + angleBoundingRect.y/inputHeight * outputHeight);
+        
+        ofTranslate(x + angleBoundingRect.x * outputWidth, y + angleBoundingRect.y * outputHeight);
         ofRotate(angle+90, 0.0f, 0.0f, 1.0f);
-        ofTranslate(-(x + angleBoundingRect.x/inputWidth * outputWidth), -(y + angleBoundingRect.y/inputHeight * outputHeight));                
+        ofTranslate(-(x + angleBoundingRect.x * outputWidth), -(y + angleBoundingRect.y * outputHeight)); 
+    
+        ofPushStyle();
+        ofNoFill();
+        ofRect(x + (angleBoundingRect.x) * outputWidth, y + ((angleBoundingRect.y - angleBoundingRect.height/2)) * outputHeight, 1, (angleBoundingRect.height) * outputHeight); //Vertical Plus
+        ofRect(x + ((angleBoundingRect.x - angleBoundingRect.width/2)) * outputWidth, y + (angleBoundingRect.y) * outputHeight, (angleBoundingRect.width) * outputWidth, 1); //Horizontal Plus
+        
+        ofPopStyle();
+        ofPopMatrix();
+    }
+	
+    void drawBox(float x = 0, float y = 0, float outputWidth = ofGetWidth(), float outputHeight = ofGetHeight()){		
+        ofPushMatrix();
+        ofTranslate(x + angleBoundingRect.x * outputWidth, y + angleBoundingRect.y * outputHeight);
+        ofRotate(angle+90, 0.0f, 0.0f, 1.0f);
+        ofTranslate(-(x + angleBoundingRect.x * outputWidth), -(y + angleBoundingRect.y * outputHeight));                
         ofNoFill();
 		 
         ofPushStyle();
         ofNoFill();
-        ofRect(x + (angleBoundingRect.x - angleBoundingRect.width/2)/inputWidth * outputWidth, y + (angleBoundingRect.y - angleBoundingRect.height/2)/inputHeight * outputHeight, angleBoundingRect.width/inputWidth * outputWidth, angleBoundingRect.height/inputHeight * outputHeight);
+        ofRect(x + (angleBoundingRect.x - angleBoundingRect.width/2) * outputWidth, y + (angleBoundingRect.y - angleBoundingRect.height/2) * outputHeight, angleBoundingRect.width * outputWidth, angleBoundingRect.height * outputHeight);
 
         ofPopStyle();
         ofPopMatrix();
