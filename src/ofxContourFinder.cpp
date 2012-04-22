@@ -91,7 +91,7 @@ int ofxContourFinder::findContours(	ofxCvGrayscaleImage&  input,
         float area = fabs( cvContourArea(contour_ptr, CV_WHOLE_SEQ) );
         if( (area > minArea) && (area < maxArea) ) {
             ofxBlob blob = ofxBlob();
-            float area = cvContourArea( contour_ptr, CV_WHOLE_SEQ );
+            float area = cvContourArea( contour_ptr, CV_WHOLE_SEQ);
             cvMoments( contour_ptr, myMoments );
             
             // this is if using non-angle bounding box

@@ -76,6 +76,7 @@ void ofxBlobTracker::track(ofxContourFinder* newBlobs){
 		int winner = trackKnn(newBlobs, &(trackedBlobs[i]), 3, 0);
         
 		if(winner == -1) { //track has died, mark it for deletion
+            ofNotifyEvent(blobDeleted, trackedBlobs[i]);
 			trackedBlobs[i].id = -1;
 		} else { //still alive, have to update
 			//if winning new blob was labeled winner by another track\
@@ -121,19 +122,17 @@ void ofxBlobTracker::track(ofxContourFinder* newBlobs){
 						//one. Right now I'm not doing that to prevent a
 						//recursive mess. It'll just be a new track.
                         
-						//erase calibrated blob from map
-						//calibratedBlobs.erase(trackedBlobs[j].id);
+                        ofNotifyEvent(blobDeleted, trackedBlobs[j]);
 						//mark the blob for deletion
 						trackedBlobs[j].id = -1;
 						//-----------------------------------------------------
 					} else {	//delete
-						//erase calibrated blob from map
-						//calibratedBlobs.erase(trackedBlobs[i].id);
+                        ofNotifyEvent(blobDeleted, trackedBlobs[i]);
 						//mark the blob for deletion
 						trackedBlobs[i].id = -1;
 					}
 				}
-			} else {//no conflicts, so simply update
+			} else { //no conflicts, so simply update
 				newBlobs->blobs[winner].id = trackedBlobs[i].id;
 				newBlobs->blobs[winner].age = trackedBlobs[i].age;
 				newBlobs->blobs[winner].sitting = trackedBlobs[i].sitting;
@@ -156,10 +155,10 @@ void ofxBlobTracker::track(ofxContourFinder* newBlobs){
 		if(trackedBlobs[i].id == -1) { //dead
 			numLeave++;
 			//erase track
-            ofNotifyEvent(blobDeleted, trackedBlobs[i]);
+            //ofNotifyEvent(blobDeleted, trackedBlobs[i]);
 			trackedBlobs.erase(trackedBlobs.begin()+i, trackedBlobs.begin()+i+1);
 			i--; //decrement one since we removed an element
-		} else {//living, so update it's data
+		} else {    //living, so update it's data
 			for(int j = 0; j < newBlobs->nBlobs; j++) {
 				if(trackedBlobs[i].id == newBlobs->blobs[j].id) {
 					//update track
@@ -366,7 +365,12 @@ void ofxBlobTracker::draw( float _x, float _y, float _width, float _height ) {
     for( int i=0; i<(int)trackedBlobs.size(); i++ ) {
         ofSetColor(221, 0, 204, 200);
         trackedBlobs[i].drawBox();
-        ofSetColor(0,255,255);
+        
+        if (trackedBlobs[i].hole)
+            ofSetColor(255,0,255);
+        else
+            ofSetColor(0,255,255);
+        
         trackedBlobs[i].drawContours();
         ofSetColor(0,153,255,100);
         trackedBlobs[i].drawCenter();

@@ -41,7 +41,7 @@ public:
         hole 		= false;
         nPts        = 0;
         
-        gotFingers = false;
+        gotFingers  = false;
         
         age			= 0.0f;
         sitting		= 0.0f;
