@@ -52,6 +52,6 @@ protected:
 
     // imporant!!
     void                reset();
-	int                 width, height;
+	float               width, height;
 };
 #endif

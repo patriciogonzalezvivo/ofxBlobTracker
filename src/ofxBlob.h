@@ -48,6 +48,34 @@ public:
         lastTimeTimeWasChecked = ofGetElapsedTimeMillis(); //get current time as of creation
     }
 
+    bool isCircular(){
+        bool rta = false;
+        
+        cout << "Width-Height: " << abs(boundingRect.width-boundingRect.height) << endl;
+        
+        if ( abs(boundingRect.width-boundingRect.height) < 0.02 ){
+            
+            float maxDistance = 0;
+            float minDistance = 10000;
+            
+            for(int i = 0; i < pts.size(); i++){
+                float dist = centroid.distance( pts[i] );
+                
+                if (dist > maxDistance)
+                    maxDistance = dist;
+                
+                if (dist < minDistance)
+                    minDistance = dist;
+            }
+            
+            cout << "Min-Max: " << abs(maxDistance - minDistance) << endl;
+            if ( abs(maxDistance - minDistance) < 0.015 )
+                rta = true;
+        }
+        
+        return  rta;
+    }
+    
     //----------------------------------------
     void drawContours(float x = 0, float y = 0, float outputWidth = ofGetWidth(), float outputHeight = ofGetHeight()) {
         ofPushMatrix();
