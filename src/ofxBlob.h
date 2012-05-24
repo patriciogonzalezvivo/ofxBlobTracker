@@ -24,6 +24,7 @@ public:
     vector<ofPoint>     fingers;        //  Position of active fingers
     bool                gotFingers;     //  If in some point got fingers we can supose that it's a hand
     ofPoint             palm;
+    ofColor             color;
 
     ofRectangle         angleBoundingRect;
     ofPoint             lastCentroid, D;
