@@ -336,11 +336,12 @@ int ofxBlobTracker::trackKnn(ofxContourFinder *newBlobs, ofxBlob *track, int k, 
 	for(iter=nbors.begin(); iter!=nbors.end(); iter++){
 		//add up how many counts each neighbor got
 		int count = ++(votes[iter->first].first);
-		double dist = (votes[iter->first].second+=iter->second);
+		double dist = (votes[iter->first].second += iter->second);
         
 		/* check for a possible tie and break with distance */
-		if(count>votes[winner].first || (count==votes[winner].first)
-           && (dist<votes[winner].second) ) {
+		if((count>votes[winner].first) || 
+           ((count == votes[winner].first) && 
+           (dist < votes[winner].second) ) ){
 			winner = iter->first;
 		}
 	}
