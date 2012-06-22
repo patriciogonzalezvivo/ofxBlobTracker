@@ -24,7 +24,8 @@ public:
     void    draw( float _x = 0, float _y = 0, float _width = 0, float _height = 0);
     
     int     size(){return trackedBlobs.size(); };
-    ofxBlob operator[](int _n){ if ( (_n >= 0) && (_n < trackedBlobs.size()) ) return trackedBlobs[_n]; };
+    
+    ofxBlob operator[](unsigned int _n){ if ( (_n >= 0U) && (_n < trackedBlobs.size()) ) return trackedBlobs[_n]; };
     
     ofEvent<ofxBlob>    blobAdded;
     ofEvent<ofxBlob>    blobMoved;

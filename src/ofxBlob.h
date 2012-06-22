@@ -59,7 +59,7 @@ public:
             float maxDistance = 0;
             float minDistance = 10000;
             
-            for(int i = 0; i < pts.size(); i++){
+            for(unsigned int i = 0; i < pts.size(); i++){
                 float dist = centroid.distance( pts[i] );
                 
                 if (dist > maxDistance)
@@ -84,7 +84,7 @@ public:
         
         ofNoFill();
         ofBeginShape();
-        for (int i = 0; i < pts.size(); i++)
+        for (unsigned int i = 0; i < pts.size(); i++)
             ofVertex(x + pts[i].x * outputWidth, y + pts[i].y * outputHeight);
         ofEndShape(true);
         
