@@ -350,11 +350,11 @@ int ofxBlobTracker::trackKnn(ofxContourFinder *newBlobs, ofxBlob *track, int k, 
 
 void ofxBlobTracker::draw( float _x, float _y, float _width, float _height ) {
 	
-    float scalex = 0.0f;
-    float scaley = 0.0f;
+    float scalex = 1.0f;
+    float scaley = 1.0f;
 	
-    if( width != 0 ) { scalex = _width/width; } else { scalex = width;};//1.0f; }
-    if( height != 0 ) { scaley = _height/height; } else { scaley = height;};//1.0f; }
+    if( _width != 0 ) { scalex = _width/width; }
+    if( _height != 0 ) { scaley = _height/height; } 
 	
     ofPushStyle();
     ofPushMatrix();
@@ -365,16 +365,16 @@ void ofxBlobTracker::draw( float _x, float _y, float _width, float _height ) {
     ofNoFill();
     for( int i=0; i<(int)trackedBlobs.size(); i++ ) {
         ofSetColor(221, 0, 204, 200);
-        trackedBlobs[i].drawBox();
+        trackedBlobs[i].drawBox(0,0,width,height);
         
         if (trackedBlobs[i].hole)
             ofSetColor(255,0,255);
         else
             ofSetColor(0,255,255);
         
-        trackedBlobs[i].drawContours();
+        trackedBlobs[i].drawContours(0,0,width,height);
         ofSetColor(0,153,255,100);
-        trackedBlobs[i].drawCenter();
+        trackedBlobs[i].drawCenter(0,0,width,height);
         ofSetColor(255,255);
         ofDrawBitmapString(ofToString(trackedBlobs[i].id), trackedBlobs[i].centroid );
         
