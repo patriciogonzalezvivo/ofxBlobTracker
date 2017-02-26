@@ -383,7 +383,7 @@ void ofxBlobTracker::draw( float _x, float _y, float _width, float _height ) {
             for (int j = 0; j < trackedBlobs[i].nFingers ; j++){
                 ofFill();
                 ofSetColor(255,0,0);
-                ofCircle(trackedBlobs[i].fingers[j],4);
+                ofDrawCircle(trackedBlobs[i].fingers[j],4);
             }
         }
     }
