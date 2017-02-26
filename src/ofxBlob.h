@@ -101,8 +101,8 @@ public:
     
         ofPushStyle();
         ofNoFill();
-        ofRect(x + (angleBoundingRect.x) * outputWidth, y + ((angleBoundingRect.y - angleBoundingRect.height/2)) * outputHeight, 1, (angleBoundingRect.height) * outputHeight); //Vertical Plus
-        ofRect(x + ((angleBoundingRect.x - angleBoundingRect.width/2)) * outputWidth, y + (angleBoundingRect.y) * outputHeight, (angleBoundingRect.width) * outputWidth, 1); //Horizontal Plus
+        ofDrawRectangle(x + (angleBoundingRect.x) * outputWidth, y + ((angleBoundingRect.y - angleBoundingRect.height/2)) * outputHeight, 1, (angleBoundingRect.height) * outputHeight); //Vertical Plus
+        ofDrawRectangle(x + ((angleBoundingRect.x - angleBoundingRect.width/2)) * outputWidth, y + (angleBoundingRect.y) * outputHeight, (angleBoundingRect.width) * outputWidth, 1); //Horizontal Plus
         
         ofPopStyle();
         ofPopMatrix();
@@ -117,7 +117,7 @@ public:
 		 
         ofPushStyle();
         ofNoFill();
-        ofRect(x + (angleBoundingRect.x - angleBoundingRect.width/2) * outputWidth, y + (angleBoundingRect.y - angleBoundingRect.height/2) * outputHeight, angleBoundingRect.width * outputWidth, angleBoundingRect.height * outputHeight);
+        ofDrawRectangle(x + (angleBoundingRect.x - angleBoundingRect.width/2) * outputWidth, y + (angleBoundingRect.y - angleBoundingRect.height/2) * outputHeight, angleBoundingRect.width * outputWidth, angleBoundingRect.height * outputHeight);
 
         ofPopStyle();
         ofPopMatrix();
